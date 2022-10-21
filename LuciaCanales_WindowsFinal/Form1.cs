@@ -30,9 +30,10 @@ namespace LuciaCanales_WindowsFinal
             apellido = txtApellido.Text;
             sueldo = Convert.ToDouble(txtSueldo.Text);
             puesto = txtPuesto.Text;
-            if (!validarSueldo(sueldo) || !validarPuesto(puesto) || !validarTexto(nombre) || !validarTexto(apellido))
+            string causa = "";
+            if (!validarSueldo(sueldo, ref causa) || !validarPuesto(puesto, ref  causa) || !validarTexto(nombre, ref causa) || !validarTexto(apellido, ref causa))
             {
-                MessageBox.Show("Datos ingresados incorrectos", "Aviso");
+                MessageBox.Show("Datos ingresados incorrectos" + causa, "Aviso");
             }
             else
                 MessageBox.Show("Datos correctos. Bienvenido", "Aviso de bienvenida");
@@ -47,17 +48,22 @@ namespace LuciaCanales_WindowsFinal
 
         private void btnIngresarHoras_Click(object sender, EventArgs e)
         {
-            int cantDiasLaborables = 5, suma = 0, cantPorDia;
+            int cantDiasLaborables = 5, suma = 0, cantPorDia, cont = 0;
             double promedio;
+            string[] dias = new string[cantDiasLaborables];
             string diasCortos = "";
 
             for (int i = 0; i < cantDiasLaborables; i++)
             {
                 cantPorDia = CantHorasDiarias(i);
                 suma += cantPorDia;
-                diasCortos += mediaJornada(cantPorDia, i) + " ";
+                //diasCortos += mediaJornada(cantPorDia, i) + " ";
+                dias[cont++] = mediaJornada(cantPorDia, i);
             }
             promedio = promedioHoras(suma, cantDiasLaborables);
+
+            for (int i = 0; i < cont; i++)
+                diasCortos += dias[i];
             MessageBox.Show("Total de horas trabajadas en la semana: " + suma + "hs. \nPromedio: " + promedio + "hs por dia.\nDias menores a Media Jornada (<4hs): " + diasCortos, "Horas de trabajo semanales");
 
         }
@@ -77,28 +83,38 @@ namespace LuciaCanales_WindowsFinal
         }
 
         #region Mis Métodos
-        bool validarSueldo (double sueldo)
+        bool validarSueldo (double sueldo, ref string causa)
         {
             if (sueldo > 0)
                 return true;
             else
+            {
+                causa += ". El sueldo debe ser >0";
                 return false;
+            }
+                
         }
 
-        bool validarPuesto (string puesto)
+        bool validarPuesto (string puesto, ref string causa)
         {
             if (puesto.ToUpper().Equals("SOPORTE TECNICO") || puesto.ToUpper().Equals("DBA") || puesto.ToUpper().Equals("DESARROLLADOR"))
                 return true;
             else
+            {
+                causa += ". El puesto debe ser Soporte Tecnico, DBA o Desarrollador";
                 return false;
+            }
         }
 
-        bool validarTexto (string nombreOApellido)
+        bool validarTexto (string nombreOApellido, ref string causa)
         {
             if (nombreOApellido.Length > 2 && nombreOApellido.Length < 50)
                 return true;
             else
+            {
+                causa += ". Debe ingresarse un nombre y apellido entre 2 a 50 caracteres";
                 return false;
+            }
         }
 
         void imprimir(string nombre, string apellido, string puesto)
@@ -109,7 +125,7 @@ namespace LuciaCanales_WindowsFinal
 
         int CantHorasDiarias (int nroDia)
         {
-            string dia = "Ingrese cantidad de horas trabajadas el dia" + diaDeLaSemana(nroDia);
+            string dia = "Ingrese cantidad de horas trabajadas el dia " + diaDeLaSemana(nroDia);
             return Convert.ToInt32(Interaction.InputBox(dia));
         }
         
@@ -118,15 +134,15 @@ namespace LuciaCanales_WindowsFinal
             string dia = "";
             switch (nroDia)
             {
-                case 0: dia = "Lunes";
+                case 0: dia = "Lunes ";
                     break;
-                case 1: dia = "Martes";
+                case 1: dia = "Martes ";
                     break;
-                case 2: dia = "Miercoles";
+                case 2: dia = "Miercoles ";
                     break;
-                case 3: dia = "Jueves";
+                case 3: dia = "Jueves ";
                     break;
-                case 4: dia = "Viernes";
+                case 4: dia = "Viernes ";
                     break;
             }
             return dia;
